@@ -7,7 +7,7 @@ TARGET = main
 
 CC = g++
 CFLAGS = -c -std=c++20 -Wall -O3 $(shell sdl2-config --cflags)
-LDFLAGS = $(shell sdl2-config --libs) -lSDL2_ttf -lSDL2_image
+LDFLAGS = $(shell sdl2-config --libs) -lSDL2_ttf
 
 all: $(TARGET)
 
