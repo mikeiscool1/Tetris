@@ -10,10 +10,12 @@ int main() {
   int output = game.init("Tetris", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Window::WIDTH, Window::HEIGHT);
   if (output != 0) return 1;
 
-  while (game.running()) {
+  while (true) {
     frame_start = SDL_GetTicks64();
 
     game.handleEvents();
+    if (!game.running()) break;
+
     game.update();
     game.render();
 
@@ -24,5 +26,6 @@ int main() {
     }
   }
 
-  return 0;
+  game.~Game();
+  exit(0);
 }

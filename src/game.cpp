@@ -223,6 +223,7 @@ void Game::renderScore() {
 bool Game::blockCanDrop() {
   auto it = std::find_if(activeBlock.structure.begin(), activeBlock.structure.end(), [this](const Coords& coord) {
     if (coord.y + TILE_SIZE >= Window::HEIGHT) return true;
+    if (coord.y + TILE_SIZE < 0) return false;
 
     Coords tileCoords = toTileCoords(coord.x, coord.y);
     size_t index = toIndex(tileCoords.x, tileCoords.y - 1);
@@ -455,7 +456,7 @@ void Game::handleEvents() {
     switch (event.type) {
       case SDL_QUIT:
         isRunning = false;
-        break;
+        return;
       case SDL_KEYDOWN:
         if (screen == Screen::AWAIT_BEGIN && event.key.keysym.sym == SDLK_SPACE) {
           screen = Screen::PLAYING;
@@ -498,8 +499,9 @@ void Game::handleEvents() {
             if (holdLocked) break;
 
             if (hold != BlockType::None) {
+              BlockType before = activeBlock.type;
               spawnBlock(hold);
-              hold = BlockType::None;
+              hold = before;
             } else {
               hold = activeBlock.type;
               spawnBlock();
@@ -510,6 +512,8 @@ void Game::handleEvents() {
         }
     }
   }
+
+  if (screen == Screen::AWAIT_BEGIN) return;
 
   static int downWait = 0;
   static int leftWait = 0;
