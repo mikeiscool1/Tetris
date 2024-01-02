@@ -87,10 +87,6 @@ inline constexpr Coords toTileCoords(int x, int y) {
   return { x / TILE_SIZE, (ROWS - 1) - y / TILE_SIZE };
 }
 
-inline constexpr size_t toIndex(int x, int y) {
-  return y * COLUMNS + x;
-}
-
 void Game::update() {
   if (screen == Screen::AWAIT_BEGIN) return;
 
@@ -165,7 +161,7 @@ void Game::renderBlocks() {
   // begin with set blocks
   for (int i = 0; i < TOTAL_TILE_COUNT; i++) {
     Coords tile = toWindowCoords(i % COLUMNS, i / COLUMNS);
-    Color color = tileColors[i];
+    Color color = tileColors.flat_index(i);
 
     if (color == Colors::empty) continue;
 
@@ -226,9 +222,8 @@ bool Game::blockCanDrop() {
     if (coord.y + TILE_SIZE < 0) return false;
 
     Coords tileCoords = toTileCoords(coord.x, coord.y);
-    size_t index = toIndex(tileCoords.x, tileCoords.y - 1);
 
-    if (tileColors[index] != Colors::empty) return true;
+    if (tileColors[tileCoords.y - 1][tileCoords.x] != Colors::empty) return true;
 
     return false;
   });
@@ -254,9 +249,8 @@ bool Game::moveHorizontal(int direction) {
     if (coord.y < 0) return false;
 
     Coords tileCoords = toTileCoords(coord.x, coord.y);
-    size_t index = toIndex(tileCoords.x + direction, tileCoords.y);
 
-    if (tileColors[index] != Colors::empty) return true;
+    if (tileColors[tileCoords.y][tileCoords.x + direction] != Colors::empty) return true;
 
     return false;
   });
@@ -306,9 +300,8 @@ bool Game::rotate(int direction) {
 
       if (coord.y > 0) {
         Coords tileCoords = toTileCoords(coord.x, coord.y);
-        size_t index = toIndex(tileCoords.x, tileCoords.y);
 
-        if (tileColors[index] != Colors::empty) {
+        if (tileColors[tileCoords.y][tileCoords.x] != Colors::empty) {
           bad = true;
           break;
         }
@@ -342,8 +335,7 @@ bool Game::place() {
     if (coord.y < 0 - TILE_SIZE) return false;
 
     Coords tileCoords = toTileCoords(coord.x, coord.y);
-    size_t index = toIndex(tileCoords.x, tileCoords.y);
-    tileColors[index] = activeBlock.color;
+    tileColors[tileCoords.y][tileCoords.x] = activeBlock.color;
   }
 
   // clear lines
@@ -353,13 +345,13 @@ bool Game::place() {
   for (int row = ROWS - 1; row >= 0; row--) {
     bool clear = true;
     for (int col = 0; col < COLUMNS; col++)
-      if (tileColors[toIndex(col, row)] == Colors::empty) clear = false;
+      if (tileColors[row][col] == Colors::empty) clear = false;
 
     if (clear) {
       for (int col = 0; col < COLUMNS; col++)
-        tileColors[toIndex(col, row)] = Colors::empty;
+        tileColors[row][col] = Colors::empty;
 
-      Color* it = tileColors.begin() + toIndex(0, row);
+      Color* it = tileColors.begin() + row * COLUMNS;
       std::rotate(it, it + COLUMNS, tileColors.end());
 
       cleared++;
@@ -399,7 +391,7 @@ void Game::spawnBlock(BlockType type) {
 
   int height = 0;
   for (int i = tileColors.size() - 1; i >= 0; i--) {
-    if (tileColors[i] != Colors::empty) {
+    if (tileColors.flat_index(i) != Colors::empty) {
       height = i / COLUMNS;
       break;
     }

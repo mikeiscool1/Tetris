@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "constants.hpp"
-#include <array>
+#include "array.hpp"
 #include <vector>
 
 enum Screen {
@@ -81,7 +81,7 @@ private:
   TTF_Font *font;
 
   Block activeBlock;
-  std::array<Color, TOTAL_TILE_COUNT> tileColors;
+  array2d<Color, COLUMNS, ROWS> tileColors;
   int level;
   int score;
   int framesForGravity;
