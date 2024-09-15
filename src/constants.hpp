@@ -29,6 +29,7 @@ namespace Colors {
   constexpr Color violet = { 127, 0, 255 };
   constexpr Color shadow = { 50, 50, 50 };
   constexpr Color empty = { 30, 30, 30 };
+  constexpr Color dead = { 50, 30, 30 };
 }
 
 namespace Window {
@@ -37,7 +38,7 @@ namespace Window {
 }
 
 namespace FPS {
-  constexpr int FPS = 60;
+  constexpr int FPS = 30;
   constexpr int FRAME_DELAY = 1000 / FPS;
 }
 

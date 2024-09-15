@@ -20,6 +20,9 @@ Game::Game():
 
 Game::~Game() { clean(); }
 
+constexpr int FACE_OFFSET = TILE_SIZE / 8;
+constexpr int FACE_SIZE = FACE_OFFSET * 2;
+
 int Game::init(const char* title, int x, int y, int w, int h) {
   srand(time(0));
   rand();
@@ -69,6 +72,7 @@ int Game::init(const char* title, int x, int y, int w, int h) {
   }
 
   SDL_ShowCursor(SDL_DISABLE);
+  SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
   for (Color &tileColor : tileColors)
     tileColor = Colors::empty;
@@ -112,7 +116,6 @@ void Game::update() {
     if (framesForGravity == 0 && level > 30) {
       for (int i = 0; i < level - 30; i++) moveDown();
     }
-
     else moveDown();
 
     if (activeBlock.structure.back().y > furthestDown) {
@@ -143,7 +146,8 @@ void Game::clean() {
 }
 
 void Game::renderBackground() {
-  SDL_SetRenderDrawColor(renderer, Colors::empty.r, Colors::empty.g, Colors::empty.b, 255);
+  if (screen != Screen::AWAIT_BEGIN) SDL_SetRenderDrawColor(renderer, Colors::empty.r, Colors::empty.g, Colors::empty.b, 255);
+  else SDL_SetRenderDrawColor(renderer, Colors::dead.r, Colors::dead.g, Colors::dead.b, 255);
   SDL_RenderClear(renderer);
 
   SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
@@ -159,6 +163,8 @@ void Game::renderBackground() {
 
 void Game::renderBlocks() {
   // begin with set blocks
+  constexpr int faceOffset = TILE_SIZE / 8;
+
   for (int i = 0; i < TOTAL_TILE_COUNT; i++) {
     Coords tile = toWindowCoords(i % COLUMNS, i / COLUMNS);
     Color color = tileColors.flat_index(i);
@@ -166,15 +172,23 @@ void Game::renderBlocks() {
     if (color == Colors::empty) continue;
 
     SDL_Rect coloredTile = { tile.x + 1, tile.y + 1, TILE_SIZE - 1, TILE_SIZE - 1 };
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 200);
     SDL_RenderFillRect(renderer, &coloredTile);
+
+    SDL_Rect coloredTileFace = { tile.x + faceOffset, tile.y + faceOffset, TILE_SIZE - faceOffset * 2,  TILE_SIZE - faceOffset * 2 };
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+    SDL_RenderFillRect(renderer, &coloredTileFace);
   }
 
   // then the dropping block
   for (const Coords& coord : activeBlock.structure) {
     SDL_Rect coloredTile = { coord.x + 1, coord.y + 1, TILE_SIZE - 1, TILE_SIZE - 1 };
-    SDL_SetRenderDrawColor(renderer, activeBlock.color.r, activeBlock.color.g, activeBlock.color.b, 255);
+    SDL_SetRenderDrawColor(renderer, activeBlock.color.r, activeBlock.color.g, activeBlock.color.b, 200);
     SDL_RenderFillRect(renderer, &coloredTile);
+
+    SDL_Rect coloredTileFace = { coord.x + faceOffset, coord.y + faceOffset, TILE_SIZE - faceOffset * 2,  TILE_SIZE - faceOffset * 2 };
+    SDL_SetRenderDrawColor(renderer, activeBlock.color.r, activeBlock.color.g, activeBlock.color.b, 255);
+    SDL_RenderFillRect(renderer, &coloredTileFace);
   }
 }
 
@@ -186,8 +200,12 @@ void Game::renderShadow() {
     Coords offset = { coord.x - ref.x, coord.y - ref.y };
 
     SDL_Rect coloredTile = { end.x + offset.x + 1, end.y + offset.y + 1, TILE_SIZE - 1, TILE_SIZE - 1 };
-    SDL_SetRenderDrawColor(renderer, Colors::shadow.r, Colors::shadow.g, Colors::shadow.b, 255);
+    SDL_SetRenderDrawColor(renderer, Colors::shadow.r, Colors::shadow.g, Colors::shadow.b, 200);
     SDL_RenderFillRect(renderer, &coloredTile);
+    
+    SDL_Rect coloredTileFace = { end.x + offset.x + FACE_OFFSET, end.y + offset.y + FACE_OFFSET, TILE_SIZE - FACE_SIZE, TILE_SIZE - FACE_SIZE };
+    SDL_SetRenderDrawColor(renderer, Colors::shadow.r, Colors::shadow.g, Colors::shadow.b, 255);
+    SDL_RenderFillRect(renderer, &coloredTileFace);
   }
 }
 
@@ -345,14 +363,20 @@ bool Game::place() {
   for (int row = ROWS - 1; row >= 0; row--) {
     bool clear = true;
     for (int col = 0; col < COLUMNS; col++)
-      if (tileColors[row][col] == Colors::empty) clear = false;
+      if (tileColors[row][col] == Colors::empty) {
+        clear = false;
+        break;
+      }
 
     if (clear) {
       for (int col = 0; col < COLUMNS; col++)
         tileColors[row][col] = Colors::empty;
 
-      Color* it = tileColors.begin() + row * COLUMNS;
-      std::rotate(it, it + COLUMNS, tileColors.end());
+      for (int r = row + 1; r < ROWS; r++) {
+        for (int c = 0; c < COLUMNS; c++) {
+          tileColors[r - 1][c] = tileColors[r][c];
+        }
+      }
 
       cleared++;
       linesCleared++;
@@ -399,8 +423,8 @@ void Game::spawnBlock(BlockType type) {
 
   int heightOffset = 0;
   if (height != tileColors.size()) {
-    if (height >= 19) heightOffset = 2;
-    else if (height >= 16) heightOffset = 1;
+    if (height >= ROWS - 1) heightOffset = 3;
+    else if (height >= ROWS - 4) heightOffset = 1;
   }
 
   Coords refTile = toWindowCoords(COLUMNS / 2 - 1, ROWS - 2 + heightOffset);
@@ -510,10 +534,17 @@ void Game::handleEvents() {
   static int downWait = 0;
   static int leftWait = 0;
   static int rightWait = 0;
-  constexpr int delay = 4;
-  constexpr int beforeContinuous = 6;
+  constexpr int delay = FPS::FPS / 15;
+  constexpr int beforeContinuous = FPS::FPS / 10;
+  
+  enum Lock {
+    Left, Right, None
+  };
 
-  SDL_PumpEvents();
+  // lock is used to handle movement when both left and right move keys are pressed.
+  // The one pressed last has priority. 
+  static Lock lock = Lock::None;
+
   const Uint8* keystate = SDL_GetKeyboardState(NULL);
 
   if (keystate[SDL_SCANCODE_DOWN]) {
@@ -524,19 +555,19 @@ void Game::handleEvents() {
     downWait++;
   } else downWait = 0;
 
-  if (keystate[SDL_SCANCODE_LEFT] && keystate[SDL_SCANCODE_RIGHT]) return;
-
   if (keystate[SDL_SCANCODE_LEFT]) {
-    if (leftWait == 0 || (leftWait > beforeContinuous && leftWait % delay == 0))
+    if ((lock != Lock::Right || !keystate[SDL_SCANCODE_RIGHT]) && (leftWait == 0 || (leftWait > beforeContinuous && leftWait % delay == 0)))
       moveHorizontal(-1);
 
     leftWait++;
+    if (lock != Lock::Left || !keystate[SDL_SCANCODE_RIGHT]) lock = Lock::Right;
   } else leftWait = 0;
-
+  
   if (keystate[SDL_SCANCODE_RIGHT]) {
-    if (rightWait == 0 || (rightWait > beforeContinuous && rightWait % delay == 0))
+    if ((lock != Lock::Left || !keystate[SDL_SCANCODE_LEFT]) && (rightWait == 0 || (rightWait > beforeContinuous && rightWait % delay == 0)))
       moveHorizontal(1);
 
     rightWait++;
+    if (lock != Lock::Right || !keystate[SDL_SCANCODE_LEFT]) lock = Lock::Left;
   } else rightWait = 0;
 }

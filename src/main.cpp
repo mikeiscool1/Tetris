@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include "game.hpp"
+#include <iostream>
 
 int main() {
   Game game;
@@ -26,6 +27,5 @@ int main() {
     }
   }
 
-  game.~Game();
   exit(0);
 }

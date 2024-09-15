@@ -12,11 +12,11 @@ public:
     return this->data() + row * width;
   }
 
-  inline constexpr T flat_index(size_t index) {
+  inline constexpr T& flat_index(size_t index) {
     return *(this->data() + index);
   }
 
-  inline constexpr const T flat_index(size_t index) const {
+  inline constexpr const T& flat_index(size_t index) const {
     return *(this->data() + index);
   }
 };
