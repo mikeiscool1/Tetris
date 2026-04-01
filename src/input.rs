@@ -70,7 +70,7 @@ pub fn handle_input(game: &mut Game, window: &mut Window) {
             }
         }
     } else {
-        if is_key_pressed(KeyCode::Enter) {
+        if is_key_pressed(KeyCode::Enter) || is_key_pressed(KeyCode::Space) {
             game.reset_game();
             game.drop_next();
         }
