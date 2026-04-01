@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" charset="UTF-8">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tetris.secant.dev/">
+    <meta property="og:title" content="Tetris">
+    <meta property="og:description" content="Play Tetris online!">
+    <meta property="og:image" content="https://tetris.secant.dev/preview-image.png">
+
+    <title>Tetris</title>
+    <style>
+        html, body {
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="glcanvas" tabindex="1"></canvas>
+
+    <script src="https://not-fl3.github.io/miniquad-samples/mq_js_bundle.js"></script>
+    <script src="quad-timestamp.js"></script>
+    <script>
+        load("../target/wasm32-unknown-unknown/release/tetris.wasm");
+        canvas.addEventListener("contextmenu", e => e.preventDefault())
+    </script>
+</body>
+</html>

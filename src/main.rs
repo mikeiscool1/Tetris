@@ -26,7 +26,10 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    #[cfg(not(target_arch = "wasm32"))]
     rand::srand(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs());
+    #[cfg(target_arch = "wasm32")]
+    rand::srand(quad_timestamp::timestamp_utc_ms().unwrap() as u64);
 
     let mut game = Game::new();
     let mut window = Window {
