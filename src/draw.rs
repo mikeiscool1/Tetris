@@ -41,22 +41,13 @@ pub fn draw_game(game: &Game) {
                 tile_size - 4.0,
                 tile_size - 4.0,
             );
-            draw_rectangle(rect.x, rect.y, rect.w, rect.h, DARKGRAY);
+            draw_rectangle(rect.x, rect.y, rect.w, rect.h, game.blocks[game.active_block_i.unwrap()].color.with_alpha(0.5));
         }
     }
 
     // Draw blocks
     for block in &game.blocks {
         for &pos in &block.structure {
-            // draw border
-            let border_rect = Rect::new(
-                offset_x + pos.x as f32 * tile_size - 1.0,
-                pos.y as f32 * tile_size - 1.0,
-                tile_size + 2.0,
-                tile_size + 2.0,
-            );
-            draw_rectangle_lines(border_rect.x, border_rect.y, border_rect.w, border_rect.h, 3.0, block.color.with_alpha(0.25));
-
             // draw inner rectangle
             let rect = Rect::new(
                 offset_x + pos.x as f32 * tile_size + 1.0,
@@ -65,6 +56,32 @@ pub fn draw_game(game: &Game) {
                 tile_size - 2.0,
             );
             draw_rectangle(rect.x, rect.y, rect.w, rect.h, block.color);
+
+            // draw shine here
+            let shine_color = Color::new(
+                (block.color.r + 0.3).min(1.0),
+                (block.color.g + 0.3).min(1.0),
+                (block.color.b + 0.3).min(1.0),
+                1.0,
+            );
+            // Top edge
+            draw_line(
+                rect.x + 1.0,
+                rect.y + 1.0,
+                rect.x + rect.w - 1.0,
+                rect.y + 1.0,
+                1.5,
+                shine_color,
+            );
+            // Left edge
+            draw_line(
+                rect.x + 1.0,
+                rect.y + 1.0,
+                rect.x + 1.0,
+                rect.y + rect.h - 1.0,
+                1.5,
+                shine_color,
+            );
         }
     }
 
@@ -83,14 +100,6 @@ pub fn draw_game(game: &Game) {
         draw_text("Next:", preview_offset_x, preview_offset_y, text_size, WHITE);
 
         for &pos in &game.next_block.structure {
-            let border_rect = Rect::new(
-                preview_offset_x + pos.x as f32 * tile_size,
-                preview_offset_y + text_size + pos.y as f32 * tile_size,
-                tile_size,
-                tile_size,
-            );
-            draw_rectangle_lines(border_rect.x, border_rect.y, border_rect.w, border_rect.h, 2.0, game.next_block.color.with_alpha(0.5));
-
             let rect = Rect::new(
                 preview_offset_x + pos.x as f32 * tile_size + 1.0,
                 preview_offset_y + text_size + pos.y as f32 * tile_size + 1.0,
@@ -99,6 +108,34 @@ pub fn draw_game(game: &Game) {
             );
             
             draw_rectangle(rect.x, rect.y, rect.w, rect.h, game.next_block.color);
+
+            // draw shine
+            let shine_color = Color::new(
+                (game.next_block.color.r + 0.3).min(1.0),
+                (game.next_block.color.g + 0.3).min(1.0),
+                (game.next_block.color.b + 0.3).min(1.0),
+                1.0,
+            );
+
+            // Top edge
+            draw_line(
+                rect.x + 1.0,
+                rect.y + 1.0,
+                rect.x + rect.w - 1.0,
+                rect.y + 1.0,
+                1.5,
+                shine_color,
+            );
+
+            // Left edge
+            draw_line(
+                rect.x + 1.0,
+                rect.y + 1.0,
+                rect.x + 1.0,
+                rect.y + rect.h - 1.0,
+                1.5,
+                shine_color,
+            );
         }
 
         //Draw hold block right below next block preview
@@ -106,14 +143,6 @@ pub fn draw_game(game: &Game) {
         draw_text("Hold:", preview_offset_x, hold_offset_y, text_size, WHITE);
         if let Some(hold_block) = &game.hold_block {
             for &pos in &hold_block.structure {
-                let border_rect = Rect::new(
-                    preview_offset_x + pos.x as f32 * tile_size,
-                    hold_offset_y + text_size + pos.y as f32 * tile_size,
-                    tile_size,
-                    tile_size,
-                );
-                draw_rectangle_lines(border_rect.x, border_rect.y, border_rect.w, border_rect.h, 2.0, hold_block.color.with_alpha(0.5));
-
                 let rect = Rect::new(
                     preview_offset_x + pos.x as f32 * tile_size + 1.0,
                     hold_offset_y + text_size + pos.y as f32 * tile_size + 1.0,
@@ -121,6 +150,34 @@ pub fn draw_game(game: &Game) {
                     tile_size - 2.0,
                 );
                 draw_rectangle(rect.x, rect.y, rect.w, rect.h, hold_block.color);
+
+                // draw shine
+                let shine_color = Color::new(
+                    (hold_block.color.r + 0.3).min(1.0),
+                    (hold_block.color.g + 0.3).min(1.0),
+                    (hold_block.color.b + 0.3).min(1.0),
+                    1.0,
+                );
+
+                // Top edge
+                draw_line(
+                    rect.x + 1.0,
+                    rect.y + 1.0,
+                    rect.x + rect.w - 1.0,
+                    rect.y + 1.0,
+                    1.5,
+                    shine_color,
+                );
+
+                // Left edge
+                draw_line(
+                    rect.x + 1.0,
+                    rect.y + 1.0,
+                    rect.x + 1.0,
+                    rect.y + rect.h - 1.0,
+                    1.5,
+                    shine_color,
+                );
             }
         }
     }

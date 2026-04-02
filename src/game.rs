@@ -22,7 +22,6 @@ impl BlockType {
     }
 
     pub fn color(&self) -> Color {
-        // pastel colors for each block type
         match self {
             BlockType::I => Color::new(0.0, 1.0, 1.0, 1.0),
             BlockType::O => Color::new(1.0, 0.835, 0.0, 1.0),
