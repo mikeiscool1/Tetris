@@ -27,14 +27,6 @@ pub fn draw_game(game: &Game) {
     // Draw shadow
     if let Some(shadow) = game.get_active_shadow() {
         for &pos in &shadow {
-            let border_rect = Rect::new(
-                offset_x + pos.x as f32 * tile_size + 1.0,
-                pos.y as f32 * tile_size + 1.0,
-                tile_size - 2.0,
-                tile_size - 2.0,
-            );
-            draw_rectangle_lines(border_rect.x, border_rect.y, border_rect.w, border_rect.h, 2.0, BLACK);
-
             let rect = Rect::new(
                 offset_x + pos.x as f32 * tile_size + 2.0,
                 pos.y as f32 * tile_size + 2.0,
@@ -42,6 +34,34 @@ pub fn draw_game(game: &Game) {
                 tile_size - 4.0,
             );
             draw_rectangle(rect.x, rect.y, rect.w, rect.h, game.blocks[game.active_block_i.unwrap()].color.with_alpha(0.5));
+
+            // draw shine
+            let shine_color = Color::new(
+                (game.blocks[game.active_block_i.unwrap()].color.r + 0.3).min(1.0),
+                (game.blocks[game.active_block_i.unwrap()].color.g + 0.3).min(1.0),
+                (game.blocks[game.active_block_i.unwrap()].color.b + 0.3).min(1.0),
+                0.5,
+            );
+
+            // Top edge
+            draw_line(
+                rect.x + 2.0,
+                rect.y + 2.0,
+                rect.x + rect.w - 2.0,
+                rect.y + 2.0,
+                1.5,
+                shine_color,
+            );
+
+            // Left edge
+            draw_line(
+                rect.x + 2.0,
+                rect.y + 2.0,
+                rect.x + 2.0,
+                rect.y + rect.h - 2.0,
+                1.5,
+                shine_color,
+            );
         }
     }
 
