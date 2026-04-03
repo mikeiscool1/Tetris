@@ -33,35 +33,22 @@ pub fn draw_game(game: &Game) {
                 tile_size - 4.0,
                 tile_size - 4.0,
             );
-            draw_rectangle(rect.x, rect.y, rect.w, rect.h, game.blocks[game.active_block_i.unwrap()].color.with_alpha(0.5));
+            
+            let color = game.blocks[game.active_block_i.unwrap()].color;
+            draw_rectangle(rect.x, rect.y, rect.w, rect.h, color.with_alpha(0.5));
 
-            // draw shine
-            let shine_color = Color::new(
-                (game.blocks[game.active_block_i.unwrap()].color.r + 0.3).min(1.0),
-                (game.blocks[game.active_block_i.unwrap()].color.g + 0.3).min(1.0),
-                (game.blocks[game.active_block_i.unwrap()].color.b + 0.3).min(1.0),
-                0.5,
-            );
+            let shine_color = Color::new((color.r + 0.3).min(1.0), (color.g + 0.3).min(1.0), (color.b + 0.3).min(1.0), 0.5);
 
             // Top edge
-            draw_line(
-                rect.x + 2.0,
-                rect.y + 2.0,
-                rect.x + rect.w - 2.0,
-                rect.y + 2.0,
-                1.5,
-                shine_color,
-            );
-
+            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + 2.0, 3.0, shine_color);
             // Left edge
-            draw_line(
-                rect.x + 2.0,
-                rect.y + 2.0,
-                rect.x + 2.0,
-                rect.y + rect.h - 2.0,
-                1.5,
-                shine_color,
-            );
+            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + 2.0, rect.y + rect.h - 2.0, 3.0, shine_color);
+
+            let shadow_color = Color::new((color.r - 0.3).max(0.0), (color.g - 0.3).max(0.0), (color.b - 0.3).max(0.0), 0.5);
+            // Bottom edge
+            draw_line(rect.x + 2.0, rect.y + rect.h - 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+            // Right edge
+            draw_line(rect.x + rect.w - 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
         }
     }
 
@@ -77,31 +64,18 @@ pub fn draw_game(game: &Game) {
             );
             draw_rectangle(rect.x, rect.y, rect.w, rect.h, block.color);
 
-            // draw shine here
-            let shine_color = Color::new(
-                (block.color.r + 0.3).min(1.0),
-                (block.color.g + 0.3).min(1.0),
-                (block.color.b + 0.3).min(1.0),
-                1.0,
-            );
+            let shine_color = Color::new((block.color.r + 0.3).min(1.0), (block.color.g + 0.3).min(1.0), (block.color.b + 0.3).min(1.0), 1.0);
+
             // Top edge
-            draw_line(
-                rect.x + 1.0,
-                rect.y + 1.0,
-                rect.x + rect.w - 1.0,
-                rect.y + 1.0,
-                1.5,
-                shine_color,
-            );
+            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + 2.0, 3.0, shine_color);
             // Left edge
-            draw_line(
-                rect.x + 1.0,
-                rect.y + 1.0,
-                rect.x + 1.0,
-                rect.y + rect.h - 1.0,
-                1.5,
-                shine_color,
-            );
+            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + 2.0, rect.y + rect.h - 2.0, 3.0, shine_color);
+
+            let shadow_color = Color::new((block.color.r - 0.3).max(0.0), (block.color.g - 0.3).max(0.0), (block.color.b - 0.3).max(0.0), 1.0);
+            // Bottom edge
+            draw_line(rect.x + 2.0, rect.y + rect.h - 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+            // Right edge
+            draw_line(rect.x + rect.w - 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
         }
     }
 
@@ -129,33 +103,18 @@ pub fn draw_game(game: &Game) {
             
             draw_rectangle(rect.x, rect.y, rect.w, rect.h, game.next_block.color);
 
-            // draw shine
-            let shine_color = Color::new(
-                (game.next_block.color.r + 0.3).min(1.0),
-                (game.next_block.color.g + 0.3).min(1.0),
-                (game.next_block.color.b + 0.3).min(1.0),
-                1.0,
-            );
+            let shine_color = Color::new((game.next_block.color.r + 0.3).min(1.0), (game.next_block.color.g + 0.3).min(1.0), (game.next_block.color.b + 0.3).min(1.0), 0.5);
 
             // Top edge
-            draw_line(
-                rect.x + 1.0,
-                rect.y + 1.0,
-                rect.x + rect.w - 1.0,
-                rect.y + 1.0,
-                1.5,
-                shine_color,
-            );
-
+            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + 2.0, 3.0, shine_color);
             // Left edge
-            draw_line(
-                rect.x + 1.0,
-                rect.y + 1.0,
-                rect.x + 1.0,
-                rect.y + rect.h - 1.0,
-                1.5,
-                shine_color,
-            );
+            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + 2.0, rect.y + rect.h - 2.0, 3.0, shine_color);
+
+            let shadow_color = Color::new((game.next_block.color.r - 0.3).max(0.0), (game.next_block.color.g - 0.3).max(0.0), (game.next_block.color.b - 0.3).max(0.0), 0.5);
+            // Bottom edge
+            draw_line(rect.x + 2.0, rect.y + rect.h - 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+            // Right edge
+            draw_line(rect.x + rect.w - 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
         }
 
         //Draw hold block right below next block preview
@@ -171,34 +130,19 @@ pub fn draw_game(game: &Game) {
                 );
                 draw_rectangle(rect.x, rect.y, rect.w, rect.h, hold_block.color);
 
-                // draw shine
-                let shine_color = Color::new(
-                    (hold_block.color.r + 0.3).min(1.0),
-                    (hold_block.color.g + 0.3).min(1.0),
-                    (hold_block.color.b + 0.3).min(1.0),
-                    1.0,
-                );
+                let shine_color = Color::new((hold_block.color.r + 0.3).min(1.0), (hold_block.color.g + 0.3).min(1.0), (hold_block.color.b + 0.3).min(1.0), 0.5);
 
                 // Top edge
-                draw_line(
-                    rect.x + 1.0,
-                    rect.y + 1.0,
-                    rect.x + rect.w - 1.0,
-                    rect.y + 1.0,
-                    1.5,
-                    shine_color,
-                );
-
+                draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + 2.0, 3.0, shine_color);
                 // Left edge
-                draw_line(
-                    rect.x + 1.0,
-                    rect.y + 1.0,
-                    rect.x + 1.0,
-                    rect.y + rect.h - 1.0,
-                    1.5,
-                    shine_color,
-                );
-            }
+                draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + 2.0, rect.y + rect.h - 2.0, 3.0, shine_color);
+
+                let shadow_color = Color::new((hold_block.color.r - 0.3).max(0.0), (hold_block.color.g - 0.3).max(0.0), (hold_block.color.b - 0.3).max(0.0), 0.5);
+                // Bottom edge
+                draw_line(rect.x + 2.0, rect.y + rect.h - 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+                // Right edge
+                draw_line(rect.x + rect.w - 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+                }
         }
     }
 }
