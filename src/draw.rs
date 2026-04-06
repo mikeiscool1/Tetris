@@ -11,6 +11,9 @@ pub fn draw_game(game: &Game) {
     let tile_size = (window_w / game.width as f32).min(window_h / game.height as f32);
     let offset_x = (window_w - tile_size * game.width as f32) / 2.0;
 
+    let line_width = (tile_size * 0.1).max(1.0);
+    let line_offset = line_width / 2.0;
+
     // Draw grid
     for x in 0..game.width {
         for y in 0..game.height {
@@ -40,15 +43,15 @@ pub fn draw_game(game: &Game) {
             let shine_color = Color::new((color.r + 0.3).min(1.0), (color.g + 0.3).min(1.0), (color.b + 0.3).min(1.0), 0.5);
 
             // Top edge
-            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + 2.0, 3.0, shine_color);
+            draw_line(rect.x + line_offset, rect.y + line_offset, rect.x + rect.w - line_offset, rect.y + line_offset, line_width, shine_color);
             // Left edge
-            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + 2.0, rect.y + rect.h - 2.0, 3.0, shine_color);
+            draw_line(rect.x + line_offset, rect.y + line_offset, rect.x + line_offset, rect.y + rect.h - line_offset, line_width, shine_color);
 
             let shadow_color = Color::new((color.r - 0.3).max(0.0), (color.g - 0.3).max(0.0), (color.b - 0.3).max(0.0), 0.5);
             // Bottom edge
-            draw_line(rect.x + 2.0, rect.y + rect.h - 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+            draw_line(rect.x + line_offset, rect.y + rect.h - line_offset, rect.x + rect.w - line_offset, rect.y + rect.h - line_offset, line_width, shadow_color);
             // Right edge
-            draw_line(rect.x + rect.w - 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+            draw_line(rect.x + rect.w - line_offset, rect.y + line_offset, rect.x + rect.w - line_offset, rect.y + rect.h - line_offset, line_width, shadow_color);
         }
     }
 
@@ -67,15 +70,15 @@ pub fn draw_game(game: &Game) {
             let shine_color = Color::new((block.color.r + 0.3).min(1.0), (block.color.g + 0.3).min(1.0), (block.color.b + 0.3).min(1.0), 1.0);
 
             // Top edge
-            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + 2.0, 3.0, shine_color);
+            draw_line(rect.x + line_offset, rect.y + line_offset, rect.x + rect.w - line_offset, rect.y + line_offset, line_width, shine_color);
             // Left edge
-            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + 2.0, rect.y + rect.h - 2.0, 3.0, shine_color);
+            draw_line(rect.x + line_offset, rect.y + line_offset, rect.x + line_offset, rect.y + rect.h - line_offset, line_width, shine_color);
 
             let shadow_color = Color::new((block.color.r - 0.3).max(0.0), (block.color.g - 0.3).max(0.0), (block.color.b - 0.3).max(0.0), 1.0);
             // Bottom edge
-            draw_line(rect.x + 2.0, rect.y + rect.h - 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+            draw_line(rect.x + line_offset, rect.y + rect.h - line_offset, rect.x + rect.w - line_offset, rect.y + rect.h - line_offset, line_width, shadow_color);
             // Right edge
-            draw_line(rect.x + rect.w - 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+            draw_line(rect.x + rect.w - line_offset, rect.y + line_offset, rect.x + rect.w - line_offset, rect.y + rect.h - line_offset, line_width, shadow_color);
         }
     }
 
@@ -106,15 +109,15 @@ pub fn draw_game(game: &Game) {
             let shine_color = Color::new((game.next_block.color.r + 0.3).min(1.0), (game.next_block.color.g + 0.3).min(1.0), (game.next_block.color.b + 0.3).min(1.0), 0.5);
 
             // Top edge
-            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + 2.0, 3.0, shine_color);
+            draw_line(rect.x + line_offset, rect.y + line_offset, rect.x + rect.w - line_offset, rect.y + line_offset, line_width, shine_color);
             // Left edge
-            draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + 2.0, rect.y + rect.h - 2.0, 3.0, shine_color);
+            draw_line(rect.x + line_offset, rect.y + line_offset, rect.x + line_offset, rect.y + rect.h - line_offset, line_width, shine_color);
 
             let shadow_color = Color::new((game.next_block.color.r - 0.3).max(0.0), (game.next_block.color.g - 0.3).max(0.0), (game.next_block.color.b - 0.3).max(0.0), 0.5);
             // Bottom edge
-            draw_line(rect.x + 2.0, rect.y + rect.h - 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+            draw_line(rect.x + line_offset, rect.y + rect.h - line_offset, rect.x + rect.w - line_offset, rect.y + rect.h - line_offset, line_width, shadow_color);
             // Right edge
-            draw_line(rect.x + rect.w - 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+            draw_line(rect.x + rect.w - line_offset, rect.y + line_offset, rect.x + rect.w - line_offset, rect.y + rect.h - line_offset, line_width, shadow_color);
         }
 
         //Draw hold block right below next block preview
@@ -133,16 +136,16 @@ pub fn draw_game(game: &Game) {
                 let shine_color = Color::new((hold_block.color.r + 0.3).min(1.0), (hold_block.color.g + 0.3).min(1.0), (hold_block.color.b + 0.3).min(1.0), 0.5);
 
                 // Top edge
-                draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + 2.0, 3.0, shine_color);
+                draw_line(rect.x + line_offset, rect.y + line_offset, rect.x + rect.w - line_offset, rect.y + line_offset, line_width, shine_color);
                 // Left edge
-                draw_line(rect.x + 2.0, rect.y + 2.0, rect.x + 2.0, rect.y + rect.h - 2.0, 3.0, shine_color);
+                draw_line(rect.x + line_offset, rect.y + line_offset, rect.x + line_offset, rect.y + rect.h - line_offset, line_width, shine_color);
 
                 let shadow_color = Color::new((hold_block.color.r - 0.3).max(0.0), (hold_block.color.g - 0.3).max(0.0), (hold_block.color.b - 0.3).max(0.0), 0.5);
                 // Bottom edge
-                draw_line(rect.x + 2.0, rect.y + rect.h - 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
+                draw_line(rect.x + line_offset, rect.y + rect.h - line_offset, rect.x + rect.w - line_offset, rect.y + rect.h - line_offset, line_width, shadow_color);
                 // Right edge
-                draw_line(rect.x + rect.w - 2.0, rect.y + 2.0, rect.x + rect.w - 2.0, rect.y + rect.h - 2.0, 3.0, shadow_color);
-                }
+                draw_line(rect.x + rect.w - line_offset, rect.y + line_offset, rect.x + rect.w - line_offset, rect.y + rect.h - line_offset, line_width, shadow_color);
+            }
         }
     }
 }
